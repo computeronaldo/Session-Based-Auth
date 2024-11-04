@@ -1,19 +1,16 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import styled from "styled-components";
 
 function Dashboard() {
-  const navigate = useNavigate();
   const [data, setData] = useState(null);
-  const { isAuthenticated, setIsAuthenticated, setSessionID, sessionID } =
-    useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     const getProtectedResource = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/protected-resource",
+          "http://localhost:3000/api/user/protected-resource",
           {
             method: "GET",
             credentials: "include",
@@ -26,20 +23,14 @@ function Dashboard() {
       }
     };
 
-    if (isAuthenticated && sessionID) {
+    if (isAuthenticated) {
       getProtectedResource();
     }
-  }, [isAuthenticated, sessionID]);
-
-  useEffect(() => {
-    if (!isAuthenticated && !sessionID) {
-      navigate("/login");
-    }
-  }, [isAuthenticated, sessionID]);
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:3000/logout", {
+      const response = await fetch("http://localhost:3000/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
@@ -52,7 +43,6 @@ function Dashboard() {
       console.log(data);
 
       setIsAuthenticated(false);
-      setSessionID(null);
     } catch (err) {
       console.log(err);
     }

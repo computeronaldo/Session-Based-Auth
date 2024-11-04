@@ -5,8 +5,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated, sessionID, setSessionID } =
-    useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,10 +13,10 @@ function Login() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated && sessionID) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [isAuthenticated, sessionID]);
+  }, [isAuthenticated]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,7 +31,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         body: JSON.stringify({
           username,
@@ -53,7 +52,6 @@ function Login() {
       const data = await response.json();
       if (data.message === "Logged in") {
         setIsAuthenticated(true);
-        setSessionID(data.sessionID);
       }
     } catch (err) {
       console.log(err);
